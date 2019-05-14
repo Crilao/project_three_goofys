@@ -5,15 +5,11 @@
 
 int main() {
 	
-	int N, M; //N eh o numero de linhas e M eh o numero de colunas da matriz
+	int N, M; //N = linhas e M = colunas nas matrizes
 	
+	int mat[N][M]; //Matriz que recebe a entrada
 
-	printf("Insira o numero de linhas e de colunas da matriz, respectivamente\n");
-	scanf("%d %d", &N, &M);
-	
-	int mat[N][M];
-
-	printf("Insira os arquivos de entrada e saida do programa\n");
+	printf("Insira o arquivo de entrada e saida do programa\n");
 	//Fazer a leitura do arquivo, eu nao sei como faz
 
 	//----------------area de teste dos arquivos-----------------//
@@ -22,38 +18,32 @@ int main() {
 	int arq; //eh a variavel que vai trazer os numeros lidos do arquivo para a matriz
 	FILE *arq_entrada;
 	arq_entrada = fopen("matriz.dat", "r");
-
-	for(contn = 0; contn < N; contn++) {
-		
-		for(contm = 0; contm < M; contm++) {
-			
-			if (arq != EOF)
-				arq = mat[N][M];
-			else
-				break;
+	
+	
 		}
 	}
-
-
 	*/
 	//-----------------------------------------------------------//
 	
 	int contn, contm; //Sao os auxiliares contadores de linha e coluna da matriz
 
+	int matInv[N][M]; //Eh a matriz invertida
+	
 	for(contn = 0; contn < N; contn++) {
 		
 		for(contm = 0; contm < M; contm++) {
 
-			mat[contn][contm] = mat[M-contm][contn];
+			matInv[contn][contm] = mat[M-contm-1][contn];
 		}
 	}
 	for(contn = 0; contn < N; contn++) {
 		
 		for(contm = 0; contm < M; contm++) {
 
-			printf("%d\n", mat[contn][contm]);
+			printf("%d ", matInv[contn][contm]);
 
 		}
+		printf("\n");
 	}
 
 
