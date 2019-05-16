@@ -3,29 +3,49 @@
 
 
 
-int main() {
-	
-	int N, M; //N = linhas e M = colunas nas matrizes
-	
-	int mat[N][M]; //Matriz que recebe a entrada
 
-	printf("Insira o arquivo de entrada e saida do programa\n");
-	//Fazer a leitura do arquivo, eu nao sei como faz
+int main(int argc, char *argv[]) {
+	
+	FILE *fr, *fw;
+	
+	int N, M, T;
+	
+	int contn, contm;
+	
+	int matriz [N][M], matInv [N][M];
+	
+	N = atoi(argv[1]);
+	M = atoi(argv[2]);
+	T = atoi(argv[3]);
 
-	//----------------area de teste dos arquivos-----------------//
-	// -------------------CUIDADO---PERIGO-----------------------//
-	/*
-	int arq; //eh a variavel que vai trazer os numeros lidos do arquivo para a matriz
-	FILE *arq_entrada;
-	arq_entrada = fopen("matriz.dat", "r");
+	if (N>1000 || M>1000) {
 	
-	
-		}
+		return 1;
 	}
-	*/
-	//-----------------------------------------------------------//
+
+
+	fr = fopen (argv[4], "r");
 	
-	int contn, contm; //Sao os auxiliares contadores de linha e coluna da matriz
+
+	
+	 for(contn=0;contn<N;contn++){
+	 	
+            for(contm=0;contm<M;contm++) {
+            
+                fscanf(fr,"%d",&matriz[contn][contm]);
+      		}
+            
+     }
+    
+	 for(contn=0;contn<N;contn++){
+	 	
+            for(contm=0;contm<N;contm++) {
+            
+                printf("%d", matriz[contn] [contm]);
+            }
+            
+    }
+
 
 	int matInv[N][M]; //Eh a matriz invertida
 	
