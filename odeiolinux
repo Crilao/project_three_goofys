@@ -1,0 +1,127 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+
+
+int main(int argc, char *argv[]) {
+	
+	FILE *fr, *fw;
+	
+	int N, M, T;
+	
+	int contn, contm;
+	
+	int **matriz;
+	matriz = (int **) malloc(N*sizeof(int*));
+	for(contn = 0; contn < N; contn++) {
+		matriz[contn] = (int *)malloc (M*sizeof(int));
+	}
+	
+
+
+
+
+
+
+
+
+
+//, matInv[N][M];
+	
+	N = atoi(argv[1]);
+	M = atoi(argv[2]);
+	T = atoi(argv[3]);
+
+	char nome[strlen(argv[4])];
+	strcpy(nome, argv[4]);
+
+	fr = fopen (nome, "rt");
+
+	if (fr == NULL)
+		printf("Erro de abertura\n");
+
+	
+
+
+
+
+
+	for(contn = 0 ; contn < N ; contn++){
+	 	
+		for(contm = 0 ; contm < M ; contm++) {
+            
+               		fscanf(fr,"%d",&matriz[contn][contm]);
+			printf("%d\t", matriz[contn][contm]);
+      		}
+   printf("\n");
+  	}
+
+	fclose(fr);
+
+
+
+
+
+
+	
+
+
+
+
+
+	char nome2[strlen(argv[5])];
+	strcpy(nome2, argv[5]);
+    	fw = fopen(nome2, "wt");
+	if (fw == NULL)
+		printf("Erro de abertura 2\n");
+
+
+
+
+
+	for(contn = 0; contn < N;contn++)
+		for(contm = 0; contm < M;contm++)
+			fprintf(fw,"%d\n",matriz[contn][contm]);
+
+
+
+
+
+
+
+
+	/* for(contn = 0 ; contn < N ; contn++){
+	 	
+            for(contm = 0 ; contm < N ; contm++) {
+            
+                fprintf(fw,"%d\t", matriz[contn][contm]);
+            }
+            fprintf(fw, "\n");
+   }*/
+	/*fclose(fw);*/
+/*
+	int matInv[N][M]; //Eh a matriz invertida
+	
+	for(contn = 0; contn < N; contn++) {
+		
+		for(contm = 0; contm < M; contm++) {
+
+			matInv[contn][contm] = mat[M-contm-1][contn];
+		}
+	}
+	for(contn = 0; contn < N; contn++) {
+		
+		for(contm = 0; contm < M; contm++) {
+
+			printf("%lf ", matInv[contn][contm]);
+
+		}
+		printf("\n");
+	}
+
+
+
+*/
+	return 0;
+}
