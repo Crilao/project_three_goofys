@@ -1,73 +1,116 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+#include <pthread.h>
+
+double** alocarMatriz(int N,int M){ //Recebe a quantidade de Linhas e Colunas como Parâmetro
+
+	int contn, contm;
+
+	double **matriz = (double**)malloc(N * sizeof(double*)); //Aloca um Vetor de Ponteiros
+	 
+  	for (contn = 0; contn < N; contn++){ //Percorre as linhas do Vetor de Ponteiros
+       		matriz[contn] = (double*) malloc(M * sizeof(double)); //Aloca um Vetor de Inteiros para cada posição do Vetor de Ponteiros.
+		for (contm = 0; contm < M; contm++){ //Percorre o Vetor de Inteiros atual.
+	   	 	matriz[contn][contm] = 0; //Inicializa com 0.
+       		}
+	}
+	return matriz;
+}
 
 
+typedef struct descricao{
+	int num_linhas;
+	int num_colunas;
+	int threads;
+	int meu_id;
 
+}desc;
+
+
+void *inv (void *arg){
+	desc *argumento = arg;
+
+	printf("Meu id é: %d\n", argumento->meu_id);
+
+}
 
 int main(int argc, char *argv[]) {
 	
-	FILE *fr, *fw;
+	FILE *fr, *fw;//Criação dos arquivos de entrada/saída
 	
-	int N, M, T;
-	
+	int N, M, T;//N=Linha; M=Coluna; T=nºThreads
+
 	int contn, contm;
-	
-	int matriz [N][M], matInv [N][M];
+
+	double **matriz = alocarMatriz(N,M);
+
+	double matInv[M][N]; //Matriz invertida
 	
 	N = atoi(argv[1]);
 	M = atoi(argv[2]);
 	T = atoi(argv[3]);
+	pthread_t id_threads[T];
 
-	if (N>1000 || M>1000) {
-	
-		return 1;
+	fr = fopen(argv[4], "r");//Abre arquivo de leitura
+	if (fr == NULL){
+		printf("Erro de abertura\n");
 	}
-
-
-	fr = fopen (argv[4], "r");
-	
-
-	
-	 for(contn=0;contn<N;contn++){
+	//==========Leitura da Matriz============================
+	for(contn = 0 ; contn < N ; contn++){
 	 	
-            for(contm=0;contm<M;contm++) {
-            
-                fscanf(fr,"%d",&matriz[contn][contm]);
+		for(contm = 0 ; contm < M ; contm++) {
+               		fscanf(fr,"%lf", &matriz[contn][contm]);
+			printf("%lf\t", matriz[contn][contm]);
       		}
-            
-     }
-    
-	 for(contn=0;contn<N;contn++){
-	 	
-            for(contm=0;contm<N;contm++) {
-            
-                printf("%d", matriz[contn] [contm]);
-            }
-            
-    }
+  	 printf("\n");
+  	}
+	fclose(fr);
+	//=======================================================
+	fw = fopen(argv[5], "w");//Abre arquivo para escrita
 
 
-	int matInv[N][M]; //Eh a matriz invertida
-	
-	for(contn = 0; contn < N; contn++) {
-		
-		for(contm = 0; contm < M; contm++) {
 
-			matInv[contn][contm] = mat[M-contm-1][contn];
+
+	//==========Invertendo a Matriz==========================
+	for(contn = 0; contn < M; contn++) {
+		for(contm = 0; contm < N; contm++) {
+			matInv[contn][contm] = matriz[N-contm-1][contn];
 		}
 	}
-	for(contn = 0; contn < N; contn++) {
-		
-		for(contm = 0; contm < M; contm++) {
+	desc argumento[T];
 
-			printf("%d ", matInv[contn][contm]);
-
-		}
-		printf("\n");
+	for(int i=0;i<T;i++){
+		argumento[i].num_linhas = N;
+		argumento[i].num_colunas = M;
+                argumento[i].threads = T;
+		argumento[i].meu_id = i;
+		pthread_create(&id_threads[i],NULL,inv,(void *)&argumento[i]);
 	}
 
+	for(int i=0;i<T;i++){
+		pthread_join(id_threads[i],NULL);
+	}
+
+	//=======================================================
 
 
 
+
+	//==========Imprimindo a Matriz invertida================
+	for(contn = 0; contn < M; contn++) {
+		for(contm = 0; contm < N; contm++) {
+			fprintf(fw,"%lf\t", matInv[contn][contm]);
+		}
+		fprintf(fw,"\n");
+	}
+	fclose(fw);
+	//=======================================================
+	free(matriz);
 	return 0;
+
+	/*
+	Todos os direitos autorais para Cristiano Furlan e Igor Gouvea
+	*/
+
 }
