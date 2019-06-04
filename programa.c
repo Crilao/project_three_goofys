@@ -1,5 +1,4 @@
 /*Um exemplo do comando para a execução correta do programa é:
-
 ./rodaMatriz 4 4 2 entrada.txt saida.txt
 - De forma que rodaMatriz é o nome do executavel;
 - O primeiro 4 é o número de linhas;
@@ -8,8 +7,6 @@
 - entrada.txt é o arquivo de texto com a matriz original;
 - saida.txt é o arquivo de texto que receberá a matriz rotacionada.
 */
-
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -17,10 +14,12 @@
 #include <time.h>
 typedef struct Infos
 {
+	int id;
 	int N; //numero de linhas
 	int M; //numero de colunas
 	int linhaStart; //posição inicial da linha
-	int linhaEnd;	//posição final da linha
+	int colunaStart;
+	int leituras;	
 	double **m;	//matriz original
 	double **minv;	//matriz rotacionada
 	FILE *fw;	//cria o arquivo de saida
@@ -30,22 +29,28 @@ INFO information[16];
 
 void *inverte(void *arg){ //funçao que rotaciona com o uso das threads
 	INFO *information = (INFO*)arg;
-	
-	
-	for(int contn = 0; contn < information->M; contn++) {
-		for(int contm = information->linhaStart; contm < information->linhaEnd; contm++) {
+	printf("eu so thread %d e preciso ler %d elementos\n", information->id, information->leituras);
+	int cont = 0;
+	for(int contn = information->linhaStart; contn < information->M; contn++) {
+		for(int contm = information->colunaStart; contm < information->N; contm++) {
+			//printf("eu so thread %d e estou lendo o %d elemento\n\n", information->id, cont+1);
+			//printf("eu so thread %d e minha leituras = %d\n",information->id, information->leituras);
+			printf("%d information->minv[%d][%d] vai para information->m[%d][%d]\n", information->id, contn, contm, information->N-contm-1, contn);
 			information->minv[contn][contm] = information->m[information->N-contm-1][contn];
-			
+			cont++;
+			if(cont==information->leituras) break;
+			 
 		}
+		if(cont==information->leituras) break;
 	}
-
 }
+
 int main(int argc, char *argv[]) {
 
 	FILE *fr;
 	int N = atoi(argv[1]);
 	int M = atoi(argv[2]);
-	int T = atoi(argv[3]);
+	int T = atoi(argv[3]);                                                                                           
 	
 	fr = fopen(argv[4], "r");
 	
@@ -83,9 +88,17 @@ int main(int argc, char *argv[]) {
 
 	//Criação das threads
 	//tI = clock();
+	int leitura, sobra;
+	leitura=N*M/T;
+	sobra=N*M%T;
 	for(i=0;i<T;i++){
-		information[i].linhaStart = (N/T) * i;
-		information[i].linhaEnd = (N/T) * (i + 1) + (N%T);
+		information[i].id = i;
+		information[i].linhaStart = ((N*M/T)*i)/M;
+		information[i].colunaStart = ((N*M/T)*i)%M;
+		information[i].leituras= leitura;
+		if(i==T-1){
+			information[i].leituras+=sobra;
+		}
 		information[i].N = Linhas;
 		information[i].M = Colunas;
 		information[i].m =m;
@@ -103,7 +116,7 @@ int main(int argc, char *argv[]) {
 
 	for(int contn = 0; contn < information->M; contn++) {
 		for(int contm = 0; contm < information->N; contm++) {
-			fprintf(information->fw,"%lf\t", minv[contn][contm]);		
+			fprintf(information->fw,"%lf\t", minv [contn][contm]);		
 		}
 		fprintf(information->fw,"\n");
 	}
