@@ -7,6 +7,8 @@
 - entrada.txt é o arquivo de texto com a matriz original;
 - saida.txt é o arquivo de texto que receberá a matriz rotacionada.
 */
+
+//mano funciona com matriz quadrada que raiva grrrr >:(
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -29,20 +31,28 @@ INFO information[16];
 
 void *inverte(void *arg){ //funçao que rotaciona com o uso das threads
 	INFO *information = (INFO*)arg;
-	printf("eu so thread %d e preciso ler %d elementos\n", information->id, information->leituras);
 	int cont = 0;
-	for(int contn = information->linhaStart; contn < information->M; contn++) {
-		for(int contm = information->colunaStart; contm < information->N; contm++) {
-			//printf("eu so thread %d e estou lendo o %d elemento\n\n", information->id, cont+1);
-			//printf("eu so thread %d e minha leituras = %d\n",information->id, information->leituras);
-			printf("%d information->minv[%d][%d] vai para information->m[%d][%d]\n", information->id, contn, contm, information->N-contm-1, contn);
-			information->minv[contn][contm] = information->m[information->N-contm-1][contn];
-			cont++;
-			if(cont==information->leituras) break;
-			 
+	int contm = information->colunaStart;
+	for(int contn = information->linhaStart; contn < information->N; contn++) {
+		for(contm; contm < information->M; contm++) {
+			if(information->N!=information->M){
+				information->minv[contm][contn] = information->m[information->N-contn-1][contm];
+				cont++;
+				if(cont==information->leituras) break;
+			}
+			else {
+
+				information->minv[contn][contm] = information->m[information->N-contm-1][contn];
+				cont++;
+				if(cont==information->leituras) break;
+			}
+			
 		}
+		
+		contm = 0;
 		if(cont==information->leituras) break;
 	}
+	
 }
 
 int main(int argc, char *argv[]) {
@@ -81,29 +91,31 @@ int main(int argc, char *argv[]) {
 		minv[i] = (double*) malloc(Linhas * sizeof(double));
 	}
 
-
+	//declaracao das variaveis para o tempo
+	float tI, tF, tExec; 
 	
-	//declaração das threads
+	//declaracao das threads
 	pthread_t id_threads[T]; 
 
 	//Criação das threads
-	//tI = clock();
+	tI = clock();
 	int leitura, sobra;
 	leitura=N*M/T;
 	sobra=N*M%T;
 	for(i=0;i<T;i++){
 		information[i].id = i;
+
+		information[i].leituras = leitura;
+		if(i==T-1){
+			information[i].leituras += sobra;
+		}
 		information[i].linhaStart = ((N*M/T)*i)/M;
 		information[i].colunaStart = ((N*M/T)*i)%M;
-		information[i].leituras= leitura;
-		if(i==T-1){
-			information[i].leituras+=sobra;
-		}
 		information[i].N = Linhas;
 		information[i].M = Colunas;
-		information[i].m =m;
+		information[i].m = m;
 		information[i].minv = minv;
-		information[i].fw=fopen(argv[5], "w");
+		information[i].fw = fopen(argv[5], "w");
 		pthread_create(&id_threads[i],NULL,inverte,(void *)&information[i]);
 	}
 	
@@ -111,7 +123,7 @@ int main(int argc, char *argv[]) {
 	for(i=0;i<T;i++){
 		pthread_join(id_threads[i], NULL);
 	}
-	//tempoFinal = clock();
+	tF = clock();
 
 
 	for(int contn = 0; contn < information->M; contn++) {
@@ -121,8 +133,9 @@ int main(int argc, char *argv[]) {
 		fprintf(information->fw,"\n");
 	}
 	
-	//tExec = (tF - tI) * 1000.0 / CLOCKS_PER_SEC;
+	tExec = (tF - tI) * 1000.0 / CLOCKS_PER_SEC;
 	
+	printf("Tempo: %f\n", tExec);
 
 	return 0;
 }
